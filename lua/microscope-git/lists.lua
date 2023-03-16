@@ -9,7 +9,7 @@ function lists.status()
     command = "git",
     args = { "status", "-s" },
     parser = function(data)
-      local file = string.sub(data.text, 3)
+      local file = string.sub(data.text, 4)
 
       return {
         text = data.text,
