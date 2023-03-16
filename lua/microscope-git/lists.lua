@@ -1,3 +1,5 @@
+local highlight = require("microscope.highlight")
+local constants = require("microscope.constants")
 local lists = {}
 
 local function relative_path(filename)
@@ -11,8 +13,17 @@ function lists.status()
     parser = function(data)
       local file = string.sub(data.text, 4)
 
+      local highlights = highlight
+        .new(data.highlights, data.text)
+        :hl_match(constants.color.color2, "(%w)( )( .*)", 1)
+        :hl_match(constants.color.color2, "(%w)(%w)( .*)", 1)
+        :hl_match(constants.color.color1, "(%w)(%w)( .*)", 2)
+        :hl_match(constants.color.color1, "( )(%w)( .*)", 2)
+        :get_highlights()
+
       return {
         text = data.text,
+        highlights = highlights,
         file = file,
       }
     end,
@@ -26,8 +37,13 @@ function lists.file_history(filename)
     args = { "log", "--follow", "--pretty=format:%h: %s", "--no-patch", "--", filename },
     parser = function(data)
       local hash = vim.split(data.text, ":", {})[1]
+
+      local highlights =
+        highlight.new(data.highlights, data.text):hl_match(constants.color.color1, "(%w+:)( .*)", 1):get_highlights()
+
       return {
         text = data.text,
+        highlights = highlights,
         hash = hash,
         file = filename,
       }
