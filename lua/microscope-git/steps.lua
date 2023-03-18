@@ -1,12 +1,12 @@
 local highlight = require("microscope.highlight")
 local constants = require("microscope.constants")
-local lists = {}
+local steps = {}
 
 local function relative_path(filename)
   return string.gsub(filename, vim.fn.getcwd() .. "/", "")
 end
 
-function lists.status()
+function steps.status()
   return {
     command = "git",
     args = { "status", "-s" },
@@ -30,7 +30,7 @@ function lists.status()
   }
 end
 
-function lists.file_history(filename)
+function steps.file_history(filename)
   filename = relative_path(filename)
   return {
     command = "git",
@@ -51,4 +51,4 @@ function lists.file_history(filename)
   }
 end
 
-return lists
+return steps
