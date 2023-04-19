@@ -1,21 +1,20 @@
 local files = require("microscope-files")
-local steps = require("microscope.steps")
-local git_steps = require("microscope-git.steps")
+local lenses = require("microscope.builtin.lenses")
+local git_lenses = require("microscope-git.lenses")
+local parsers = require("microscope.builtin.parsers")
+local git_parsers = require("microscope-git.parsers")
 local preview = require("microscope-git.preview")
 
 return {
   git_file_history = {
+    lens = lenses.head(100, lenses.fzf(git_lenses.file_history())),
+    parsers = { git_parsers.commit, parsers.fuzzy },
     preview = preview.file,
-    chain = function(text, _, buf)
-      local filename = vim.api.nvim_buf_get_name(buf)
-      return { git_steps.file_history(filename), steps.fzf(text), steps.head(100) }
-    end,
   },
   git_status = {
+    lens = lenses.head(100, lenses.fzf(git_lenses.status())),
+    parsers = { git_parsers.status, parsers.fuzzy },
     open = files.open,
     preview = preview.file_diff,
-    chain = function(text)
-      return { git_steps.status(), steps.fzf(text), steps.head(100) }
-    end,
   },
 }

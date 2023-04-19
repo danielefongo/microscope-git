@@ -1,23 +1,29 @@
-local stream = require("microscope.stream")
+local scope = require("microscope.api.scope")
 local highlight = require("microscope.utils.highlight")
 
 local preview = {}
 
 function preview.file_diff(data, window)
   window:clear()
-  if preview.stream then
-    preview.stream:stop()
+  if preview.scope then
+    preview.scope:stop()
   end
-  preview.stream = stream.chain({
-    {
-      command = "git",
-      args = { "diff", "--color=always", data.file },
-    },
-  }, function(lines)
-    window:write_term(lines)
-  end)
 
-  preview.stream:start()
+  preview.scope = scope.new({
+    lens = {
+      fun = function(flow)
+        flow.spawn({
+          cmd = "git",
+          args = { "diff", "--color=always", data.file },
+        })
+      end,
+    },
+    callback = function(lines, text)
+      window:write_term(lines)
+    end,
+  })
+
+  preview.scope:search(data.file)
 end
 
 function preview.file(data, window)
@@ -25,17 +31,23 @@ function preview.file(data, window)
   if preview.stream then
     preview.stream:stop()
   end
-  preview.stream = stream.chain({
-    {
-      command = "git",
-      args = { "--no-pager", "show", string.format("%s:%s", data.hash, data.file) },
-    },
-  }, function(lines)
-    window:write(lines)
-    highlight(data.file, window.buf)
-  end)
 
-  preview.stream:start()
+  preview.scope = scope.new({
+    lens = {
+      fun = function(flow, text)
+        flow.spawn({
+          cmd = "git",
+          args = { "--no-pager", "show", string.format("%s:%s", data.hash, data.file) },
+        })
+      end,
+    },
+    callback = function(lines, text)
+      window:write(lines)
+      highlight(text, window.buf)
+    end,
+  })
+
+  preview.scope:search(data.file)
 end
 
 return preview

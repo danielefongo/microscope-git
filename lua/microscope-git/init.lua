@@ -1,5 +1,6 @@
 return {
   finders = require("microscope-git.finders"),
-  steps = require("microscope-git.steps"),
+  lenses = require("microscope-git.lenses"),
+  parsers = require("microscope-git.parsers"),
   preview = require("microscope-git.preview"),
 }
