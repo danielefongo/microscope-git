@@ -7,14 +7,16 @@ local preview = require("microscope-git.preview")
 
 return {
   git_file_history = {
-    lens = lenses.head(100, lenses.fzf(lenses.cache(git_lenses.file_history()))),
+    lens = lenses.head(lenses.fzf(lenses.cache(git_lenses.file_history()))),
     parsers = { git_parsers.commit, parsers.fuzzy },
     preview = preview.file,
+    args = { limit = 100 },
   },
   git_status = {
-    lens = lenses.head(100, lenses.fzf(lenses.cache(git_lenses.status()))),
+    lens = lenses.head(lenses.fzf(lenses.cache(git_lenses.status()))),
     parsers = { git_parsers.status, parsers.fuzzy },
     open = files.open,
     preview = preview.file_diff,
+    args = { limit = 100 },
   },
 }
