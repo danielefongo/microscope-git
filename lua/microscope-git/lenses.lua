@@ -12,8 +12,8 @@ end
 function lenses.file_history()
   return {
     fun = function(flow, request)
-      local filename = flow.cmd.fn(vim.api.nvim_buf_get_name, request.buf):collect()
-      local relative_filename = flow.cmd.fn(utils.relative, filename):collect()
+      local filename = flow.cmd.fn(vim.api.nvim_buf_get_name, request.buf):collect(flow)
+      local relative_filename = flow.cmd.fn(utils.relative, filename):collect(flow)
 
       flow.cmd
         .shell("git", { "log", "--follow", "--pretty=format:%h: %s", "--no-patch", "--", relative_filename })
