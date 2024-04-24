@@ -12,13 +12,11 @@ function preview.file_diff(data, window)
   preview.scope = scope.new({
     lens = {
       fun = function(flow)
-        flow.cmd
-          .shell("git", {
-            "diff",
-            "--color=always",
-            data.file,
-          })
-          :into(flow)
+        flow.consume(flow.cmd.shell("git", {
+          "diff",
+          "--color=always",
+          data.file,
+        }))
       end,
     },
     callback = function(lines)
@@ -38,13 +36,11 @@ function preview.file(data, window)
   preview.scope = scope.new({
     lens = {
       fun = function(flow)
-        flow.cmd
-          .shell("git", {
-            "--no-pager",
-            "show",
-            string.format("%s:%s", data.hash, data.file),
-          })
-          :into(flow)
+        flow.consume(flow.cmd.shell("git", {
+          "--no-pager",
+          "show",
+          string.format("%s:%s", data.hash, data.file),
+        }))
       end,
     },
     callback = function(lines, text)
