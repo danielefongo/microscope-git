@@ -1,5 +1,5 @@
 local scope = require("microscope.api.scope")
-local highlight = require("microscope.utils.highlight")
+local treesitter = require("microscope.api.treesitter")
 
 local preview = {}
 
@@ -45,7 +45,9 @@ function preview.file(data, window)
     },
     callback = function(lines, text)
       window:write(lines)
-      highlight(text, window.buf)
+      local hls = treesitter.for_buffer(window.buf, vim.filetype.match({ filename = data.file, buf = window.buf }))
+      window:clear_buf_hls()
+      window:set_buf_hls(hls)
     end,
   })
 
